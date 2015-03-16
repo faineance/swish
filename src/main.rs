@@ -1,5 +1,9 @@
 use std::{io, os, env, path, process};
+use std::io::BufRead;
+use std::io::Write;
 
+use builtin::{cd};
+mod builtin;
 
 struct Job {
     process : process::Child,
@@ -8,6 +12,7 @@ struct Job {
 struct HistoryItem {
     args : Vec<String>
 }
+
 fn prompt() -> String {
     let mut prompt = String::new();
     let pwd = Path::new(os::getenv("PWD").unwrap());
@@ -20,9 +25,6 @@ fn prompt() -> String {
     }
     prompt.push_str("$");
     prompt
-
-    
-
 }
 
 
@@ -31,7 +33,19 @@ fn main() {
     let mut history: Vec<HistoryItem> = vec![];
     println!("Swish");
     loop {
-        let prompt = prompt();
+        let mut input = String::new();
+        let outputbuffer = io::stdout();
+        let mut outputlock = outputbuffer.lock();
+        let prompt = prompt();                                                                                                                                                                                                           
+        outputlock.write(prompt.as_bytes());
+        outputlock.flush();
+        
+        
+        let inputbuffer = io::stdin();
+        let mut inputlock = inputbuffer.lock();
+        inputlock.read_line(&mut input);
+        
+
 
     }
 }
